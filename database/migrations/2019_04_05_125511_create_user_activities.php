@@ -14,15 +14,15 @@ class CreateUserActivities extends Migration
     public function up()
     {
         Schema::create('user_activities', function (Blueprint $table) {
-            $table->bigIncrements('id');
-            $table->integer('user_id')->foreign();
-            $table->string('field_name');
-            $table->string('old_value');
-            $table->string('new_value');
-            $table->string('modified_by')->foreign();
-            $table->timestamps();
-            $table->string('modified_byname');
-        });
+        $table->bigIncrements('id');
+        $table->string('entity_type')->comment('polymorphic relations (models, i.e. users table)');
+        $table->integer('entity_id')->foreign();
+        $table->string('field_name');
+        $table->string('old_value');
+        $table->string('new_value');
+        $table->string('modified_by')->references('id')->on('users');
+        $table->timestamps();
+    });
     }
 
     /**
@@ -34,4 +34,5 @@ class CreateUserActivities extends Migration
     {
         Schema::dropIfExists('user_activities');
     }
+    
 }

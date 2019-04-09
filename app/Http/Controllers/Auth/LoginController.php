@@ -29,7 +29,7 @@ class LoginController extends Controller
      *
      * @var string
      */
-    protected $redirectTo = '/home';
+    protected $redirectTo = '/users';
 
     /**
      * @var AuthenticationService $authenticationService
@@ -63,12 +63,12 @@ class LoginController extends Controller
         // the IP address of the client making these requests into this application.
         if ($this->hasTooManyLoginAttempts($request)) {
             $this->fireLockoutEvent($request);
-            
             return $this->sendLockoutResponse($request);
         }
 
         // This section is the only change
         if ($this->guard()->validate($this->credentials($request))) {
+            
             $user = $this->guard()->getLastAttempted();
            // dd('in lofginf');
             // Make sure the user is active
@@ -77,7 +77,7 @@ class LoginController extends Controller
                 //dd('in lofgifffnf');
                 return $this->sendLoginResponse($request);
             } else {
-               // dd('in elselofginf');
+                //dd('in elselofginf');
                 // Increment the failed login attempts and redirect back to the
                 // login form with an error message.
                 $this->incrementLoginAttempts($request);

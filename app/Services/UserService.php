@@ -135,8 +135,8 @@ class UserService
         if ($id == Auth::id()) {
             return false;
         }
-
-        return $this->userRepository->update($id, ['status' => self::status]);
+        $this->userRepository->update($id, ['status' => self::status]);
+        return $this->userRepository->delete($id); 
     }
 
     /**
@@ -163,6 +163,7 @@ class UserService
         }
 
         return $this->userRepository->update($userId, $inputData);
+        
     }
 
     /**
@@ -176,42 +177,42 @@ class UserService
      * @return bool
      * @throws \Exception
      */
-    // public function trackUserActivity($modifiedBy, $class, $trackableFields, $dataBeforeUpdated, $dataAfterUpdated) : bool
-    // {
-    //     $dataAfterUpdated = $dataAfterUpdated->toArray();
-    //     $dataBeforeUpdated = $dataBeforeUpdated->toArray();
+    public function trackUserActivity($modifiedBy, $class, $trackableFields, $dataBeforeUpdated, $dataAfterUpdated) : bool
+    {
+        $dataAfterUpdated = $dataAfterUpdated->toArray();
+        $dataBeforeUpdated = $dataBeforeUpdated->toArray();
 
-    //     $updatedData = array_diff($dataAfterUpdated, $dataBeforeUpdated);
+        $updatedData = array_diff($dataAfterUpdated, $dataBeforeUpdated);
 
-    //     if (empty($updatedData)) {
-    //         return true;
-    //     }
+        if (empty($updatedData)) {
+            return true;
+        }
 
-    //     $trackableData = array_only($updatedData, $trackableFields);
+        $trackableData = array_only($updatedData, $trackableFields);
 
-    //     if (empty($trackableData)) {
-    //         return true;
-    //     }
+        if (empty($trackableData)) {
+            return true;
+        }
 
-    //     $trackableDataToInsert = [];
-    //     foreach ($trackableFields as $field) {
-    //         if (isset($trackableData[$field]) && !empty($trackableData[$field])) {
-    //             $information['id'] = Uuid::generate();
-    //             $information['entity_type'] = $class;
-    //             $information['entity_id'] = $dataBeforeUpdated['id'];
-    //             $information['column_name'] = $field;
-    //             $information['old_value'] = $dataBeforeUpdated[$field];
-    //             $information['modified_value'] = $dataAfterUpdated[$field];
-    //             $information['modified_by'] = $modifiedBy;
-    //             $information['created_at'] = Carbon::now()->toDateTimeString();
-    //             $information['updated_at'] = Carbon::now()->toDateTimeString();
+        $trackableDataToInsert = [];
+        foreach ($trackableFields as $field) {
+            if (isset($trackableData[$field]) && !empty($trackableData[$field])) {
+                
+                $information['entity_type'] = $class;
+                $information['entity_id'] = $dataBeforeUpdated['id'];
+                $information['field_name'] = $field;
+                $information['old_value'] = $dataBeforeUpdated[$field];
+                $information['new_value'] = $dataAfterUpdated[$field];
+                $information['modified_by'] = $modifiedBy;
+                $information['created_at'] = Carbon::now()->toDateTimeString();
+                $information['updated_at'] = Carbon::now()->toDateTimeString();
 
-    //             $trackableDataToInsert[] = $information;
-    //         }
-    //     }
+                $trackableDataToInsert[] = $information;
+            }
+        }
 
-    //     $this->userActivityRepository->insertMultipleRows($trackableDataToInsert);
+        $this->userActivityRepository->insertMultipleRows($trackableDataToInsert);
 
-    //     return true;
-    // }
+        return true;
+    }
 }
