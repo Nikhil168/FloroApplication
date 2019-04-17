@@ -1,9 +1,10 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\API;
 use App\Services\ExportUserService;
 use Illuminate\Support\Facades\Auth;
-
+use Maatwebsite\Excel\Facades\Excel;
 
 class ExportUserController extends Controller
 {
@@ -31,7 +32,7 @@ class ExportUserController extends Controller
     public function exportUsers()
     {
         $this->exportUserService->processUserExport();
-
+       
         return redirect('/users')->with('successMessage',
             __('frontendMessages.SUCCESS_MESSAGES.USERS_EXPORTED'));
     }

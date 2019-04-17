@@ -7,11 +7,15 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Laravel\Passport\HasApiTokens;
+use Kyslik\ColumnSortable\Sortable;
 
 class User extends Authenticatable
 {
+    use HasApiTokens;
     use Notifiable;
     use SoftDeletes;
+    use Sortable;
     /**
      * The attributes that are mass assignable.
      *
@@ -31,7 +35,7 @@ class User extends Authenticatable
         'password',
         
     ];
-
+    public $sortable = ['user_name', 'email', 'first_name'];
     /**
      * The attributes that should be hidden for arrays.
      *
@@ -64,4 +68,8 @@ class User extends Authenticatable
     {
         return $this->hasMany(AuthenticationLog::class)->orderBy('created_at', 'desc')->limit(1);
     }
+    public function sorting()
+{
+    return $this->hasMany('App\User');
+}
 }

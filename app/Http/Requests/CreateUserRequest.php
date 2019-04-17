@@ -30,7 +30,7 @@ class CreateUserRequest extends FormRequest
     {
         return [
             'user_name' =>  'required|unique:users',
-            'email' => self::REQUIRED . '|unique:users,email|email',
+            'email' => self::REQUIRED . '|email|unique:users',
             'password' => self::REQUIRED . '|confirmed|min:6',
             'password_confirmation' => self::REQUIRED,
             'first_name' => self::REQUIRED,

@@ -8,7 +8,6 @@ use Maatwebsite\Excel\Facades\Excel;
 use App\User;
 use App\Models\UserActivity;
 
-
 class ProcessUserExportsJobService
 {
     /**
@@ -21,8 +20,10 @@ class ProcessUserExportsJobService
      *
      * @return void
      */
+
     public function processUserExports(User $user)
     {
+        //dd('dsfsd');
         $this->user = $user;
 
         $this->unlinkExportFileIfExist();

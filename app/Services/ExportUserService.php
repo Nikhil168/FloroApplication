@@ -6,7 +6,7 @@ use App\Jobs\ProcessUserExportsJob;
 use App\Repositories\UserRepository;
 use Illuminate\Support\Facades\Auth;
 use App\Models\UserActivity;
-
+use Maatwebsite\Excel\Facades\Excel;
 
 class ExportUserService
 {
@@ -30,6 +30,6 @@ class ExportUserService
      */
     public function processUserExport()
     {
-        ProcessUserExportsJob::dispatch(Auth::user());
+      ProcessUserExportsJob::dispatch(Auth::user());
     }
 }

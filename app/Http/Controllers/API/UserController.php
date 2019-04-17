@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\API;
 
 use App\Http\Requests\CreateUserRequest;
 use App\Http\Requests\UpdateUserRequest;
@@ -31,12 +31,12 @@ class UserController extends Controller
     {
         $this->userService = $userService;
     }
-
-    public function login(Request $request){ 
-        //dd(Auth::attempt(['email' => request('email'), 'password' => request('password')]));
-        
-        if(Auth::attempt(['email' => request('email'), 'password' => request('password')])){ 
+   
+    public function login(Request $request)
+    { 
+         if(Auth::attempt(['email' => request('email'), 'password' => request('password')])){ 
             $user = Auth::user(); 
+            //$table = $this->userService->index($request);
             $success['token'] =  $user->createToken('MyApp')-> accessToken; 
             return response()->json(['success' => $success], $this-> successStatus); 
         } 
@@ -49,12 +49,26 @@ class UserController extends Controller
      *
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
      */
-    public function index()
+    public function index(Request $request)
     {
-        $table = $this->userService->index();
+        $table=User::paginate(10);
+        $table = $this->userService->index($request);
         return $table;
     }
 
+    public function sort(Request $request)
+    {
+    $table = $this->userService->sort($request);
+    return $table;
+    }
+    
+    public function getSearchResults(Request $request) 
+    {
+        $table = $this->userService->search($request);
+        return response()->json([
+            $table,'message' => 'Searched Record::'
+         ]); 
+    }
     /**
      * Show the form for creating a new resource.
      *
@@ -64,7 +78,6 @@ class UserController extends Controller
     {
         return view('admin.users.user');
     }
-
     /**
      * Store a newly created user in the database.
      *
@@ -74,10 +87,11 @@ class UserController extends Controller
     public function store(CreateUserRequest $request)
     {
         $validated = $request->validated();
+
         $result = $this->userService->createUser($request);
-
-
-        return $result;
+        return response()->json([
+            'message' => 'Successfully Created Record..',$result
+         ]); 
     }
 
     /**
@@ -99,10 +113,10 @@ class UserController extends Controller
     public function edit($id)
     {
         $user = $this->userService->getUser($id);
-        if ($user == null) {
-            return redirect('/users')->with('errorMessage',
-                __('frontendMessages.EXCEPTION_MESSAGES.FIND_USER_MESSAGE'));
-        }
+        // if ($user == null) {
+        //     return redirect('/users')->with('errorMessage',
+        //         __('frontendMessages.EXCEPTION_MESSAGES.FIND_USER_MESSAGE'));
+        // }
 
         return view('admin.users.user', ['user' => $user]);
     }
@@ -117,13 +131,16 @@ class UserController extends Controller
     public function update(UpdateUserRequest $request, $id)
     {
         $result = $this->userService->updateUser($request, $id);
-         if ($result == null) {
-             return redirect('/users/edit')->with('errorMessage',
-                 config('frontendMessages.EXCEPTION_MESSAGES.UPDATE_USER_MESSAGE'));
-         }
+        //  if ($result == null) {
+        //      return redirect('/users/edit')->with('errorMessage',
+        //          config('frontendMessages.EXCEPTION_MESSAGES.UPDATE_USER_MESSAGE'));
+        //  }
 
-        return redirect('/users')->with('successMessage', __('frontendMessages.SUCCESS_MESSAGES.USER_UPDATED'));
-        return $result;
+        // return redirect('/users')->with('successMessage', __('frontendMessages.SUCCESS_MESSAGES.USER_UPDATED'));
+        return response()->json([
+            'message' => 'Successfully Updated',$result
+         ]);  
+
     }
 
     /**
@@ -135,18 +152,10 @@ class UserController extends Controller
     public function destroy($id)
     {
         $result = $this->userService->deleteUser($id);
-
-        // if (!$result) {
-        //     return redirect('/users')->with('errorMessage',
-        //         __('frontendMessages.EXCEPTION_MESSAGES.DELETE_USER_MESSAGE'));
-        // }
-
-        // return redirect('/users')->with('successMessage', __('frontendMessages.SUCCESS_MESSAGES.USER_DELETED'));
-    return response()->json([
+        return response()->json([
         'message' => 'Successfully deleted',$result
-    ]);        
-   /// return $result;
-}
+     ]);        
+    }
     public function home()
     {
         if(!empty(Auth::user()) && Auth::user()!=null) {
@@ -156,7 +165,7 @@ class UserController extends Controller
         {
         return view('auth.login');
         }
-}
+    }
 public function logout(Request $request)
 {
     $request->user()->token()->revoke();
@@ -164,4 +173,5 @@ public function logout(Request $request)
         'message' => 'Successfully logged out'
     ]);
 }
+
 }

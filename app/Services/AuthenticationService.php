@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Repositories\AuthenticationLogRepository;
 use App\User;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 
 class AuthenticationService
 {
@@ -37,8 +38,8 @@ class AuthenticationService
         $logDetails = [
             'user_id' => $user->id,
             'ip_address' => $request->ip(),
-            // 'login_time' =>Carbon::now()->toDateTimeString(),
-            // 'logout_time'=>date('Y-m-d H:i:s'),
+             'login_time' =>Carbon::now()->toDateTimeString(),
+             'logout_time'=>date('Y-m-d H:i:s'),
              'browser_agent'=>$request->server('HTTP_USER_AGENT'),
             
         ];

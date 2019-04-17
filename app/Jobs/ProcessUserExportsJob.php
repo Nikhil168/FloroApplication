@@ -9,6 +9,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ProcessUserExportsJob implements ShouldQueue
 {
@@ -35,6 +36,7 @@ class ProcessUserExportsJob implements ShouldQueue
      */
     public function handle(ProcessUserExportsJobService $processUserExportsJobService)
     {
+       // dd('sss111s');
         $processUserExportsJobService->processUserExports($this->user);
     }
 }

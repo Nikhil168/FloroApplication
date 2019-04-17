@@ -7,6 +7,7 @@ use App\Mail\UserCreatedEmail;
 use App\Repositories\UserActivityRepository;
 use App\Repositories\UserRepository;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request; 
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Mail;
@@ -16,8 +17,9 @@ use App\Models\UserActivity;
 
 use Carbon\Carbon;
 
-class UserService
+class UserService 
 {
+    	
     /**
      * @var UserRepository $userRepository
      */
@@ -42,6 +44,22 @@ class UserService
         $this->userActivityRepository = $userActivityRepository;
     }
 
+    public function search(Request $request)
+    {
+        $table=$this->userRepository->search($request);
+        return $table;
+    }	
+
+    public function index(Request $request)
+    {
+        $table=$this->userRepository->index($request);
+        return $table;
+    }
+    public function sort(Request $request)
+    {
+    $table = $this->userRepository->sort($request);
+    return $table;
+    }
     /**
      * Method to create the user.
      *
@@ -51,25 +69,9 @@ class UserService
     public function createUser(CreateUserRequest $request)
     {
         $inputData = $request->all();
-
-        // Unset the password_confirmation field from the array.
-        unset($inputData['password_confirmation']);
-
-        $password = $inputData['password'];
-        $inputData['password'] = Hash::make($inputData['password']);
-
         $user = $this->userRepository->create($inputData);
-
-        if (!$user) {
-            return null;
-        }
-
-        // Used this in the 'created' event of user observer (because of the password i wrote code here.).
-        Mail::to($inputData['email'])->send(new UserCreatedEmail(Auth::user(), $user, ['password' => $password]));
-
         return $user;
     }
-
     /**
      * Method to get all the users in the table format.
      *
@@ -130,12 +132,8 @@ class UserService
      * @param $id
      * @return bool
      */
-    public function deleteUser(string $id) : bool
+    public function deleteUser(string $id)
     {
-        if ($id == Auth::id()) {
-            return false;
-        }
-        $this->userRepository->update($id, ['status' => self::status]);
         return $this->userRepository->delete($id); 
     }
 

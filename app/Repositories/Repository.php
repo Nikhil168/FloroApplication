@@ -23,6 +23,10 @@ class Repository
     {
         return $this->model->create($attributes);
     }
+    public function all()
+    { 
+        return $this->model->all();  
+    }
 
     /**
      * Method to insert multiple records at once.
@@ -70,6 +74,7 @@ class Repository
      */
     public function delete($id)
     {
+        
         $currentModel = $this->find($id);
 
         return $currentModel->delete();
